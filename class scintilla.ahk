@@ -18,6 +18,9 @@ class s{
 		this.2242(1,width),this.2240(1,4),this.2056(32,"Consolas"),this.2050,this.2037(65001)
 		this.2077(0,"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ|_+`0123456789")
 		this.2106(44),this.2118(0),this.2110(0)
+		this.2053(42,1)
+		loop,16
+			b:=A_Index-1,this.2080(b,8),this.2082(b,v.dcolors[A_Index-1]),this.2523(b,255),this.2510(b,1),this.2558(b,255)
 		return this
 	}
 	delete(x*){

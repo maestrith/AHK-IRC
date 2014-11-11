@@ -1,15 +1,3 @@
-tab:
-name:=Edit.textrange(start:=Edit.2266(Edit.2008,0),end:=Edit.2267(Edit.2008,0))
-name:=end!=Edit.2008?SubStr(name,1,Edit.2008):name
-TV_GetText(chan,TV_GetSelection())
-sock:=socket.current(),list:=""
-for a in sock.channels[chan].users{
-	if RegExMatch(a,"Ai)" name)||name=""
-		list.=a ","
-}
-if list
-	Edit.2100(Edit.2008-start,Trim(list,","))
-return
 notify(){
 	static lastword,lastnick,lasttv,lastlines,modelist:={op:"-@",msg:"",voice:"-@,-+"},users
 	notify:
@@ -24,6 +12,8 @@ notify(){
 		while,sc.2010(end)=1
 			end++
 		url:=sc.textrange(start+1,end)
+		if !RegExMatch(url,"i)(http|https)://")
+			url:="http://" url
 		Run,% url
 	}
 	if(fn.code=2004)
@@ -57,6 +47,18 @@ notify(){
 			tt:=edit.gettext(),info:=StrSplit(tt," ").1
 			if info in /op,/deop,/voice,/devoice
 				SetTimer,send,10
+		}else if(text="monitor"){
+			InputBox,monitor,Monitor List,Comma separated list,,,,,,,,% settings.ssn("//monitor").text
+			if ErrorLevel
+				return
+			settings.add({path:"monitor",text:monitor})
+			for a,b in socket.sockets
+				b.Send("MONITOR + " monitor)
+			edit.2004
+			return
+		}else if(text="Reload"){
+			socket.current().Send("QUIT :Updating my IRC Client. brb")
+			Reload
 		}
 		Else
 			SetTimer,addspace,10
@@ -80,6 +82,8 @@ notify(){
 			SetTimer,showservers,1
 	}
 	if(fn.code=2001){
+		if (edit.2102&&fn.ch=32)
+			edit.2101()
 		text:=edit.gettext(),count:=""
 		if(edit.2007(edit.2008-1)=46&&edit.2007(edit.2008-2)=47){
 			Gui,2:Destroy
@@ -95,7 +99,7 @@ notify(){
 		if(SubStr(text,1,1)!="/"||InStr(text," ")!=0)
 			return
 		tt:=StrSplit(text,"/").2
-		cmds:="Server,afk,me,msg,Join,Op,Voice,DeOp,DeVoice,Topic,Nick,Help,Edit Server List,Exit,bow,Count"
+		cmds:="Server,afk,me,msg,Join,JoinAuto,Op,Voice,DeOp,DeVoice,Topic,Nick,Help,Edit Server List,Exit,bow,Count,Reload,monitor"
 		for a,b in StrSplit(cmds,",")
 			if(SubStr(b,1,StrLen(tt))=tt)
 				count.=b ","

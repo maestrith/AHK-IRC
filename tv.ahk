@@ -12,14 +12,13 @@ tv(){
 		Sleep,100
 		sc.2051(1,0xff0000),sc.2409(1,1)
 		while,(b:=sock.Log["|" ei].1){
-			msg:=sc.2006?"`n" b.msg:b.msg
-			sc.2171(0),sc.2003(sc.2006,msg),sc.2171(1),line:=sc.2166(sc.2006),sc.2530(line,b.time)
-			sock.Log["|" A_EventInfo].Remove(1)
+			disp(b.nick,b.time,b.info)
+			sock.Log["|" ei].Remove(1)
 		}
 	}
 	if !sc.2137
 		sc.2037(65001)
-	SetTimer,end,10
+	SetTimer,end,-10
 	Edit.2400(),TV_GetText(channel,ei),topic:=sock.channels[channel].topic
 	if (InStr(channel,"#")&&TV_GetParent(ei)){
 		topic:=Trim(topic)?" : " topic:""

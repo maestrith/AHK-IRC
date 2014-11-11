@@ -1,4 +1,5 @@
 Process(){
+	static monitor:=[]
 	process:
 	info:=socket.msg.1,sock:=info.sock,channel:=1
 	for a,b in StrSplit(info.msg,"`r`n"){
@@ -16,7 +17,7 @@ Process(){
 			}
 		}
 		if (info.2="mode"){
-			;mode=4 chan=3 user=5 nick.value(1)=who gave it.
+			;mode=4 chan=3 user=5 nick.1=who gave it.
 			for a,b in StrSplit(info.4){
 				if b in +,-
 					operation:=b
@@ -37,37 +38,31 @@ Process(){
 					break
 				}
 			}
-			TV_Modify(user.tv,"",pre info.5)
-			TV_Modify(TV_GetParent(user.tv),"Sort")
+			TV_Modify(user.tv,"",pre info.5),TV_Modify(TV_GetParent(user.tv),"Sort")
 		}
 		if (info.2=433)
 			sock.send("NICK " sock.username A_MSec)
+		if (info.2=1)
+			TV_Modify(sock.tv,"",sock.host " - " sock.username:=info.3)
 		if (info.2="nick"){
 			info.3:=RegExReplace(info.3,"A):")
 			if check is not number
-				sock.nick(nick.value(1),info.3)
+				sock.nick(nick.1,info.3)
 		}
-		if (info.2="part"){
-			sock.part({nick:nick.value(1),chan:info.3})
-			display({msg:nick.value(1) " has left the channel",chan:info.3,sock:sock})
-		}
-		if (info.2="kick"){
-			sock.part({nick:info.4,chan:info.3})
-			display({msg:info.4 " was kicked from the channel",chan:info.3,sock:sock})
-		}
-		if (info.2=1)
-			TV_Modify(sock.tv,"",sock.host " - " sock.username:=info.3)
-		if (info.2=353){
+		if (info.2="part")
+			sock.part({nick:nick.1,chan:info.3}),display({msg:nick.1 " has left the channel",chan:info.3,sock:sock})
+		if (info.2="kick")
+			sock.part({nick:info.4,chan:info.3}),display({msg:info.4 " was kicked from the channel",chan:info.3,sock:sock})
+		if (info.2=353)
 			for a,user in StrSplit(message," ")
 				if user
 					sock.user({chan:info.5,user:user})
-		}
 		if (info.2="quit")
-			sock.quit(nick.value(1))
+			sock.quit(nick.1,message)
 		if (info.2="join"){
-			if (nick.value(1)!=sock.username){
-				sock.user({chan:chan:=RegExReplace(info.3,"A):"),user:nick.value(1)})
-				display({msg:nick.value(1) " has joined the channel",chan:chan,sock:sock})
+			if (nick.1!=sock.username){
+				sock.user({chan:chan:=RegExReplace(info.3,"A):"),user:nick.1})
+				display({msg:nick.1 " has joined the channel",chan:chan,sock:sock})
 			}
 		}
 		if (info.2="topic"){
@@ -75,13 +70,30 @@ Process(){
 			TV_GetText(cc,TV_GetSelection())
 			if (cc=info.3)
 				WinSetTitle,% hwnd([1]),,% "IRC - " cc " : " topic
-			display({msg:"New Topic: " topic,chan:cc,sock:sock,nick:nick.value(1)})
+			display({msg:"New Topic: " topic,chan:cc,sock:sock,nick:nick.1})
 		}
 		if (info.2=332)
 			obj:=sock.channel({chan:info.4}).topic:=message
-		if (info.2=376)
+		if (info.2="730"){
+			uz:=""
+			for c,d in StrSplit(message,",")
+				monitor[StrSplit(d,"!").1]:=1
+			for c in monitor
+				uz.=c ","
+			SB_SetText(Trim(uz,","))
+		}else if(info.2="731"),uz:=""{
+			for c,d in StrSplit(message,",")
+				monitor.Remove(d)
+			for c in monitor
+				uz.=c ","
+			SB_SetText(Trim(uz,","))
+		}
+		if (info.2~="376|422"){
 			for a,b in sock.autojoin
 				sock.send("JOIN " b)
+			if userlist:=settings.ssn("//monitor").text
+				sock.Send("MONITOR + " userlist)
+		}
 		if (info.1="ping")
 			sock.Send("PONG :" message)
 		if (info.2="privmsg"){
@@ -92,10 +104,10 @@ Process(){
 				FileAppend,% A_Now "-" message "`r`n",messages.txt
 			}
 			if !InStr(channel,"#")
-				sock.channel({chan:channel:=nick.value(1)})
+				sock.channel({chan:channel:=nick.1})
 		}
 		FileAppend,%b%`r`n,log.txt
-		display({msg:message,chan:channel,sock:sock,nick:nick.value(1)})
+		display({msg:message,chan:channel,sock:sock,nick:nick.1})
 	}
 	socket.msg.Remove(1)
 	if !(socket.msg.1.msg)

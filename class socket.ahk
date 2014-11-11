@@ -16,7 +16,7 @@ class Socket{ ;socket
 		if this.Password
 			this.Send("PASS " this.password)
 		this.Send("NICK " this.username),this.Send("USER " this.username " 0 * :" this.username)
-		socket.TreeView["|" this.tv:=TV_Add(this.host,0,"Focus Select Vis")]:=this,this.sc:=sc.2375,sc.2358(0,this.sc),socket.sockets.Insert(this),sc.2051(1,0xff0000),sc.2409(1,1)
+		socket.TreeView["|" this.tv:=TV_Add(this.servername,0,"Focus Select Vis")]:=this,this.sc:=sc.2375,sc.2358(0,this.sc),socket.sockets.Insert(this),sc.2051(1,0xff0000),sc.2409(1,1)
 		for a,b in {modes:"",log:"",channels:"",autojoin:"",nicklist:""}{
 			this[b]:=[]
 			for c,d in b
@@ -39,15 +39,15 @@ class Socket{ ;socket
 		}
 		this.users.Remove(old)
 		if (old=this.username)
-			TV_Modify(this.tv,"",this.host " - " new),this.username:=new
+			TV_Modify(this.tv,"",this.servername " - " new),this.username:=new
 	}
-	quit(nick){
+	quit(nick,msg){
 		if (nick=this.username)
 			this.disconnect()
 		Else{
 			for a,b in this.users[nick]{
 				this.Count(TV_GetParent(b.tv),a),TV_Delete(b.tv),this.channels[a].users.Remove(nick)
-				display({msg:nick " has quit the server",chan:a,sock:this})
+				display({msg:nick " has quit the server:" SubStr(msg,InStr(msg,":")+1),chan:a,sock:this})
 			}
 			this.users.Remove(nick)
 		}

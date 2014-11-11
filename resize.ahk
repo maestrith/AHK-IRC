@@ -13,8 +13,8 @@ resize(a="",b=""){
 		total+=Edit.2235(A_Index-1)
 	editheight:=hh*total+3,editheight:=height-50<editheight?height-50:editheight
 	socket.pos.width:=width,socket.pos.height:=height
-	ControlMove,SysTreeView321,,,,% height-Editheight-6,% hwnd([1])
-	ControlMove,,,,width-156,% height-Editheight-6,% "ahk_id" sc.sc
-	ControlMove,Scintilla2,,% height-editheight+29,width-4,%editheight%,% hwnd([1])
+	ControlMove,SysTreeView321,,,,% height-Editheight-6-v.statush,% hwnd([1])
+	ControlMove,,,,width-156,% height-Editheight-6-v.statush,% "ahk_id" sc.sc
+	ControlMove,Scintilla2,,% height-editheight+29-v.statush,width-4,%editheight%,% hwnd([1])
 	GuiControl,+Redraw,% sc.sc
 }
