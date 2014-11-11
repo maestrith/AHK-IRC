@@ -14,7 +14,7 @@ gui(){
 	edit.2171(0),Edit.2400,Edit.2013
 	Edit.2037(65001)
 	Edit.2115(1),Edit.2634(1),Edit.2660(2),edit.2110(1)
-	sc.2171(0),sc.2181(0,"¯\_(ツ)_/¯"),sc.2171(1) ;Help:`n`tType / and then things happen.
+	sc.2171(0),sc.2181(0,"¯\_(ツ)_/¯`nType /ed to edit servers`ntype /s to connect to a server"),sc.2171(1) ;Help:`n`tType / and then things happen.
 	Edit.2112(0,":") ;¯\_(ツ)_/¯
 	Hotkey,IfWinActive,% hwnd(1,hwnd)
 	for a,b in ["Escape","Enter","Tab","Alt"]
